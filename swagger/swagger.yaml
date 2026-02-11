@@ -1,0 +1,435 @@
+openapi: 3.0.3
+info:
+  title: API системы автоматизации оптовых продаж
+  description: >
+    REST API информационной системы для автоматизации оптовых продаж
+    и управления поставками пищевой продукции
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: Локальный сервер
+
+tags:
+  - name: Auth
+    description: Аутентификация и авторизация
+  - name: Users
+    description: Пользователи и роли
+  - name: Clients
+    description: Клиенты
+  - name: Suppliers
+    description: Поставщики
+  - name: Products
+    description: Товары
+  - name: Batches
+    description: Партии товаров
+  - name: Warehouses
+    description: Склады
+  - name: Sales
+    description: Заказы клиентов
+  - name: Purchases
+    description: Поставки
+  - name: Stock
+    description: Складские операции
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Вход пользователя в систему
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Неверные учетные данные
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Получить список пользователей
+      responses:
+        "200":
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+    post:
+      tags: [Users]
+      summary: Создать пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreate"
+      responses:
+        "201":
+          description: Пользователь создан
+
+  /clients:
+    get:
+      tags: [Clients]
+      summary: Получить список клиентов
+      responses:
+        "200":
+          description: Список клиентов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+
+    post:
+      tags: [Clients]
+      summary: Добавить клиента
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientCreate"
+      responses:
+        "201":
+          description: Клиент добавлен
+
+  /suppliers:
+    get:
+      tags: [Suppliers]
+      summary: Получить список поставщиков
+      responses:
+        "200":
+          description: Список поставщиков
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Supplier"
+
+    post:
+      tags: [Suppliers]
+      summary: Добавить поставщика
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SupplierCreate"
+      responses:
+        "201":
+          description: Поставщик добавлен
+
+  /products:
+    get:
+      tags: [Products]
+      summary: Получить список товаров
+      responses:
+        "200":
+          description: Список товаров
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+    post:
+      tags: [Products]
+      summary: Создать товар
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreate"
+      responses:
+        "201":
+          description: Товар создан
+
+  /batches:
+    get:
+      tags: [Batches]
+      summary: Получить список партий товаров
+      responses:
+        "200":
+          description: Список партий
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Batch"
+
+  /warehouses:
+    get:
+      tags: [Warehouses]
+      summary: Получить список складов
+      responses:
+        "200":
+          description: Список складов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Warehouse"
+
+  /sales/orders:
+    get:
+      tags: [Sales]
+      summary: Получить заказы клиентов
+      responses:
+        "200":
+          description: Список заказов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SalesOrder"
+
+    post:
+      tags: [Sales]
+      summary: Создать заказ клиента
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SalesOrderCreate"
+      responses:
+        "201":
+          description: Заказ создан
+
+  /purchases/orders:
+    get:
+      tags: [Purchases]
+      summary: Получить поставки
+      responses:
+        "200":
+          description: Список поставок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PurchaseOrder"
+
+    post:
+      tags: [Purchases]
+      summary: Создать поставку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurchaseOrderCreate"
+      responses:
+        "201":
+          description: Поставка создана
+
+  /stock/movements:
+    get:
+      tags: [Stock]
+      summary: Получить движения товаров
+      responses:
+        "200":
+          description: Список движений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StockMovement"
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        role:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        role:
+          type: string
+
+    UserCreate:
+      type: object
+      required: [email, password, role]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    ClientCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    SupplierCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+
+    ProductCreate:
+      type: object
+      required: [name, price]
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+
+    Batch:
+      type: object
+      properties:
+        id:
+          type: integer
+        productId:
+          type: integer
+        expiresAt:
+          type: string
+          format: date
+        quantity:
+          type: number
+
+    Warehouse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    SalesOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+        clientId:
+          type: integer
+        status:
+          type: string
+
+    SalesOrderCreate:
+      type: object
+      required: [clientId, items]
+      properties:
+        clientId:
+          type: integer
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: integer
+              quantity:
+                type: number
+
+    PurchaseOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+        supplierId:
+          type: integer
+        status:
+          type: string
+
+    PurchaseOrderCreate:
+      type: object
+      required: [supplierId, items]
+      properties:
+        supplierId:
+          type: integer
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: integer
+              quantity:
+                type: number
+
+    StockMovement:
+      type: object
+      properties:
+        id:
+          type: integer
+        productId:
+          type: integer
+        batchId:
+          type: integer
+        quantityDelta:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
