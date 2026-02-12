@@ -1,11 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
 import { roles, users } from '../database/schema';
 
 @Injectable()
 export class AuthRepository {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    @Inject(DatabaseService)
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   async validateUser(email: string, password: string) {
     const row = await this.databaseService.db

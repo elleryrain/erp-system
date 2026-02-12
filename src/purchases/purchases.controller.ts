@@ -1,10 +1,13 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { PurchaseOrderCreateDto } from './dto/create-purchase-order.dto';
 import { PurchasesRepository } from './purchases.repository';
 
 @Controller('purchases/orders')
 export class PurchasesController {
-  constructor(private readonly purchasesRepository: PurchasesRepository) {}
+  constructor(
+    @Inject(PurchasesRepository)
+    private readonly purchasesRepository: PurchasesRepository,
+  ) {}
 
   @Get()
   findAll() {
@@ -13,6 +16,9 @@ export class PurchasesController {
 
   @Post()
   create(@Body() dto: PurchaseOrderCreateDto) {
+    if (!dto) {
+      throw new BadRequestException('Request body is required');
+    }
     return this.purchasesRepository.create(dto);
   }
 }

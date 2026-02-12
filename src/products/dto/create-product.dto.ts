@@ -1,10 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsDefined, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class ProductCreateDto {
+  @IsDefined()
   @IsString()
+  @IsNotEmpty()
   name!: string;
 
+  @IsDefined()
   @Type(() => Number)
   @IsNumber()
   @Min(0)
@@ -12,11 +15,13 @@ export class ProductCreateDto {
 
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
+  @IsInt()
+  @Min(1)
   categoryId?: number;
 
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
+  @IsInt()
+  @Min(1)
   unitId?: number;
 }

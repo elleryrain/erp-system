@@ -1,9 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import { StockRepository } from './stock.repository';
 
 @Controller('stock/movements')
 export class StockController {
-  constructor(private readonly stockRepository: StockRepository) {}
+  constructor(
+    @Inject(StockRepository)
+    private readonly stockRepository: StockRepository,
+  ) {}
 
   @Get()
   findAll() {

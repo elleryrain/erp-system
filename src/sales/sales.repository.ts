@@ -1,11 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { desc, eq, inArray } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
 import { clients, products, salesOrderItems, salesOrders } from '../database/schema';
 
 @Injectable()
 export class SalesRepository {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    @Inject(DatabaseService)
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   async findAll() {
     return this.databaseService.db
@@ -23,7 +26,7 @@ export class SalesRepository {
     items: Array<{ productId: number; quantity: number }>;
   }) {
     return this.databaseService.db.transaction(async (tx) => {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = new Date();
       const clientExists = await tx
         .select({ id: clients.id })
         .from(clients)

@@ -1,14 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
-import { DatabaseService } from '../database/database.service';
-import { productCategories, products, units } from '../database/schema';
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { eq } from "drizzle-orm";
+import { DatabaseService } from "../database/database.service";
+import { productCategories, products, units } from "../database/schema";
 
-const DEFAULT_CATEGORY_NAME = 'General';
-const DEFAULT_UNIT = { name: 'Pieces', shortName: 'pcs' };
+const DEFAULT_CATEGORY_NAME = "General";
+const DEFAULT_UNIT = { name: "Pieces", shortName: "pcs" };
 
 @Injectable()
 export class ProductsRepository {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    @Inject(DatabaseService)
+    private readonly databaseService: DatabaseService
+  ) {}
 
   async findAll() {
     const rows = await this.databaseService.db
@@ -33,7 +36,9 @@ export class ProductsRepository {
           .limit(1)
           .then((rows) => rows[0]);
         if (!categoryExists) {
-          throw new BadRequestException(`Category ${data.categoryId} not found`);
+          throw new BadRequestException(
+            `Category ${data.categoryId} not found`
+          );
         }
       }
 
@@ -49,7 +54,8 @@ export class ProductsRepository {
         }
       }
 
-      const categoryId = data.categoryId ?? (await this.ensureDefaultCategory(tx));
+      const categoryId =
+        data.categoryId ?? (await this.ensureDefaultCategory(tx));
       const unitId = data.unitId ?? (await this.ensureDefaultUnit(tx));
 
       const row = await tx
@@ -60,7 +66,11 @@ export class ProductsRepository {
           categoryId,
           unitId,
         })
-        .returning({ id: products.id, name: products.name, price: products.price })
+        .returning({
+          id: products.id,
+          name: products.name,
+          price: products.price,
+        })
         .then((rows) => rows[0]);
 
       return { ...row, price: Number(row.price) };

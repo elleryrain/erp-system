@@ -1,11 +1,14 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
 import { roles, users } from '../database/schema';
 
 @Injectable()
 export class UsersRepository {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    @Inject(DatabaseService)
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   async findAll() {
     return this.databaseService.db

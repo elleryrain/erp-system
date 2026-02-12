@@ -1,10 +1,13 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { SalesOrderCreateDto } from './dto/create-sales-order.dto';
 import { SalesRepository } from './sales.repository';
 
 @Controller('sales/orders')
 export class SalesController {
-  constructor(private readonly salesRepository: SalesRepository) {}
+  constructor(
+    @Inject(SalesRepository)
+    private readonly salesRepository: SalesRepository,
+  ) {}
 
   @Get()
   findAll() {
@@ -13,6 +16,9 @@ export class SalesController {
 
   @Post()
   create(@Body() dto: SalesOrderCreateDto) {
+    if (!dto) {
+      throw new BadRequestException('Request body is required');
+    }
     return this.salesRepository.create(dto);
   }
 }
