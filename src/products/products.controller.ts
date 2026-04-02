@@ -1,21 +1,24 @@
 import { BadRequestException, Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
+import { Roles } from '../common/decorators/roles.decorator';
 import { ProductCreateDto } from './dto/create-product.dto';
-import { ProductsRepository } from './products.repository';
+import { ProductsService } from './products.service';
 
 @Controller('products')
 export class ProductsController {
   constructor(
-    @Inject(ProductsRepository)
-    private readonly productsRepository: ProductsRepository,
+    @Inject(ProductsService)
+    private readonly productsService: ProductsService,
   ) {}
 
+  @Roles('admin', 'manager', 'warehouse_keeper')
   @Get()
   findAll() {
-    return this.productsRepository.findAll();
+    return this.productsService.findAll();
   }
 
+  @Roles('admin', 'manager')
   @Post()
   async create(@Body() body: unknown) {
     if (!body || typeof body !== 'object') {
@@ -32,6 +35,6 @@ export class ProductsController {
       throw new BadRequestException(errors);
     }
 
-    return this.productsRepository.create(dto);
+    return this.productsService.create(dto);
   }
 }

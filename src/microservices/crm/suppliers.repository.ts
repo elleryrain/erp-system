@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
-import { suppliers } from '../database/schema';
+import { DatabaseService } from '../../database/database.service';
+import { suppliers } from '../../database/schema';
 
 @Injectable()
 export class SuppliersRepository {
@@ -9,7 +9,7 @@ export class SuppliersRepository {
     private readonly databaseService: DatabaseService,
   ) {}
 
-  async findAll() {
+  findAll() {
     return this.databaseService.db
       .select({
         id: suppliers.id,
@@ -20,7 +20,7 @@ export class SuppliersRepository {
       .from(suppliers);
   }
 
-  async create(data: { name: string; phone?: string; email?: string }) {
+  create(data: { name: string; phone?: string; email?: string }) {
     return this.databaseService.db
       .insert(suppliers)
       .values(data)

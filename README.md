@@ -4,8 +4,10 @@ Stack:
 - Node.js
 - TypeScript
 - NestJS + Fastify
+- NestJS Microservices + NATS
 - PostgreSQL + Drizzle ORM
 - JWT auth (`@nestjs/jwt`, `passport-jwt`)
+- RBAC (`admin`, `manager`, `warehouse_keeper` / `кладовщик`)
 
 ## Quick start
 
@@ -14,10 +16,16 @@ yarn install
 cp .env.example .env
 yarn drizzle:generate
 yarn drizzle:migrate
-yarn start:dev
+yarn start:dev:identity
+yarn start:dev:catalog
+yarn start:dev:crm
+yarn start:dev:inventory
+yarn start:dev:orders
+yarn start:dev:gateway
 ```
 
 Server: `http://localhost:3000/api`
+NATS: `nats://127.0.0.1:4222`
 
 ## Auth
 
@@ -36,6 +44,12 @@ Use token in protected routes:
 ```text
 Authorization: Bearer <token>
 ```
+
+## Roles
+
+- `admin`: full access, including user management
+- `manager`: sales, purchases, catalog, clients, suppliers
+- `warehouse_keeper` / `кладовщик`: warehouse, stock, batches, inventory read access
 
 ## Migrations (PostgreSQL)
 

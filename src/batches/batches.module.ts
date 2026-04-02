@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { BatchesController } from './batches.controller';
-import { BatchesRepository } from './batches.repository';
+import { NatsClientsModule } from '../common/nats/nats-clients.module';
+import { BatchesService } from './batches.service';
 
 @Module({
+  imports: [NatsClientsModule],
   controllers: [BatchesController],
-  providers: [BatchesRepository],
+  providers: [BatchesService],
 })
 export class BatchesModule {}

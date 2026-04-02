@@ -1,16 +1,16 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
-import { eq } from "drizzle-orm";
-import { DatabaseService } from "../database/database.service";
-import { productCategories, products, units } from "../database/schema";
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { eq } from 'drizzle-orm';
+import { DatabaseService } from '../../database/database.service';
+import { productCategories, products, units } from '../../database/schema';
 
-const DEFAULT_CATEGORY_NAME = "General";
-const DEFAULT_UNIT = { name: "Pieces", shortName: "pcs" };
+const DEFAULT_CATEGORY_NAME = 'General';
+const DEFAULT_UNIT = { name: 'Pieces', shortName: 'pcs' };
 
 @Injectable()
 export class ProductsRepository {
   constructor(
     @Inject(DatabaseService)
-    private readonly databaseService: DatabaseService
+    private readonly databaseService: DatabaseService,
   ) {}
 
   async findAll() {
@@ -36,9 +36,7 @@ export class ProductsRepository {
           .limit(1)
           .then((rows) => rows[0]);
         if (!categoryExists) {
-          throw new BadRequestException(
-            `Category ${data.categoryId} not found`
-          );
+          throw new BadRequestException(`Category ${data.categoryId} not found`);
         }
       }
 
@@ -54,8 +52,7 @@ export class ProductsRepository {
         }
       }
 
-      const categoryId =
-        data.categoryId ?? (await this.ensureDefaultCategory(tx));
+      const categoryId = data.categoryId ?? (await this.ensureDefaultCategory(tx));
       const unitId = data.unitId ?? (await this.ensureDefaultUnit(tx));
 
       const row = await tx
@@ -83,7 +80,7 @@ export class ProductsRepository {
       .from(productCategories)
       .where(eq(productCategories.name, DEFAULT_CATEGORY_NAME))
       .limit(1)
-      .then((rows) => rows[0]);
+      .then((rows: Array<{ id: number }>) => rows[0]);
 
     if (existing) {
       return existing.id;
@@ -93,7 +90,7 @@ export class ProductsRepository {
       .insert(productCategories)
       .values({ name: DEFAULT_CATEGORY_NAME })
       .returning({ id: productCategories.id })
-      .then((rows) => rows[0].id);
+      .then((rows: Array<{ id: number }>) => rows[0].id);
   }
 
   private async ensureDefaultUnit(tx: any) {
@@ -102,7 +99,7 @@ export class ProductsRepository {
       .from(units)
       .where(eq(units.shortName, DEFAULT_UNIT.shortName))
       .limit(1)
-      .then((rows) => rows[0]);
+      .then((rows: Array<{ id: number }>) => rows[0]);
 
     if (existing) {
       return existing.id;
@@ -112,6 +109,6 @@ export class ProductsRepository {
       .insert(units)
       .values(DEFAULT_UNIT)
       .returning({ id: units.id })
-      .then((rows) => rows[0].id);
+      .then((rows: Array<{ id: number }>) => rows[0].id);
   }
 }

@@ -1,7 +1,8 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import { DatabaseService } from '../database/database.service';
-import { roles, users } from '../database/schema';
+import { assertRole } from '../../common/auth/role.utils';
+import { DatabaseService } from '../../database/database.service';
+import { roles, users } from '../../database/schema';
 
 @Injectable()
 export class AuthRepository {
@@ -31,7 +32,7 @@ export class AuthRepository {
     return {
       userId: row.userId,
       email: row.email,
-      role: row.role ?? 'unknown',
+      role: assertRole(row.role ?? 'unknown'),
     };
   }
 }

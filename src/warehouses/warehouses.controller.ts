@@ -1,15 +1,17 @@
 import { Controller, Get, Inject } from '@nestjs/common';
-import { WarehousesRepository } from './warehouses.repository';
+import { Roles } from '../common/decorators/roles.decorator';
+import { WarehousesService } from './warehouses.service';
 
 @Controller('warehouses')
 export class WarehousesController {
   constructor(
-    @Inject(WarehousesRepository)
-    private readonly warehousesRepository: WarehousesRepository,
+    @Inject(WarehousesService)
+    private readonly warehousesService: WarehousesService,
   ) {}
 
+  @Roles('admin', 'manager', 'warehouse_keeper')
   @Get()
   findAll() {
-    return this.warehousesRepository.findAll();
+    return this.warehousesService.findAll();
   }
 }

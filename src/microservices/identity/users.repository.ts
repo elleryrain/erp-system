@@ -1,7 +1,8 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import { DatabaseService } from '../database/database.service';
-import { roles, users } from '../database/schema';
+import { normalizeRole } from '../../common/auth/role.utils';
+import { DatabaseService } from '../../database/database.service';
+import { roles, users } from '../../database/schema';
 
 @Injectable()
 export class UsersRepository {
@@ -11,7 +12,7 @@ export class UsersRepository {
   ) {}
 
   async findAll() {
-    return this.databaseService.db
+    const rows = await this.databaseService.db
       .select({
         id: users.id,
         email: users.email,
@@ -19,9 +20,16 @@ export class UsersRepository {
       })
       .from(users)
       .leftJoin(roles, eq(users.roleId, roles.id));
+
+    return rows.map((row) => ({
+      ...row,
+      role: row.role ? normalizeRole(row.role) : row.role,
+    }));
   }
 
   async create(data: { email: string; password: string; role: string }) {
+    const role = normalizeRole(data.role);
+
     return this.databaseService.db.transaction(async (tx) => {
       const existingUser = await tx
         .select({ id: users.id })
@@ -37,7 +45,7 @@ export class UsersRepository {
       const existingRole = await tx
         .select({ id: roles.id, name: roles.name })
         .from(roles)
-        .where(eq(roles.name, data.role))
+        .where(eq(roles.name, role))
         .limit(1)
         .then((rows) => rows[0]);
 
@@ -46,7 +54,7 @@ export class UsersRepository {
         (
           await tx
             .insert(roles)
-            .values({ name: data.role })
+            .values({ name: role })
             .returning({ id: roles.id })
             .then((rows) => rows[0])
         ).id;
@@ -60,7 +68,7 @@ export class UsersRepository {
           roleId,
         })
         .returning({ id: users.id, email: users.email })
-        .then((rows) => ({ ...rows[0], role: data.role }));
+        .then((rows) => ({ ...rows[0], role }));
     });
   }
 }

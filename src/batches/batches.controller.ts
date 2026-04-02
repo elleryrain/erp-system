@@ -1,15 +1,17 @@
 import { Controller, Get, Inject } from '@nestjs/common';
-import { BatchesRepository } from './batches.repository';
+import { Roles } from '../common/decorators/roles.decorator';
+import { BatchesService } from './batches.service';
 
 @Controller('batches')
 export class BatchesController {
   constructor(
-    @Inject(BatchesRepository)
-    private readonly batchesRepository: BatchesRepository,
+    @Inject(BatchesService)
+    private readonly batchesService: BatchesService,
   ) {}
 
+  @Roles('admin', 'manager', 'warehouse_keeper')
   @Get()
   findAll() {
-    return this.batchesRepository.findAll();
+    return this.batchesService.findAll();
   }
 }

@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { desc, eq, inArray } from 'drizzle-orm';
-import { DatabaseService } from '../database/database.service';
-import { clients, products, salesOrderItems, salesOrders } from '../database/schema';
+import { DatabaseService } from '../../database/database.service';
+import { clients, products, salesOrderItems, salesOrders } from '../../database/schema';
 
 @Injectable()
 export class SalesRepository {
@@ -45,7 +45,11 @@ export class SalesRepository {
           orderDate: today,
           status: 'created',
         })
-        .returning({ id: salesOrders.id, clientId: salesOrders.clientId, status: salesOrders.status })
+        .returning({
+          id: salesOrders.id,
+          clientId: salesOrders.clientId,
+          status: salesOrders.status,
+        })
         .then((rows) => rows[0]);
 
       const productIds = [...new Set(data.items.map((item) => item.productId))];

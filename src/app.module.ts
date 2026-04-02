@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { BatchesModule } from './batches/batches.module';
 import { ClientsModule } from './clients/clients.module';
-import { DatabaseModule } from './database/database.module';
 import { ProductCategoriesModule } from './product-categories/product-categories.module';
 import { ProductsModule } from './products/products.module';
 import { PurchasesModule } from './purchases/purchases.module';
@@ -14,7 +13,6 @@ import { WarehousesModule } from './warehouses/warehouses.module';
 
 @Module({
   imports: [
-    DatabaseModule,
     AuthModule,
     UsersModule,
     ClientsModule,

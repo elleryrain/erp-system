@@ -1,24 +1,27 @@
 import { BadRequestException, Body, Controller, Get, Inject, Post } from '@nestjs/common';
-import { ClientsRepository } from './clients.repository';
+import { Roles } from '../common/decorators/roles.decorator';
 import { ClientCreateDto } from './dto/create-client.dto';
+import { ClientsService } from './clients.service';
 
 @Controller('clients')
 export class ClientsController {
   constructor(
-    @Inject(ClientsRepository)
-    private readonly clientsRepository: ClientsRepository,
+    @Inject(ClientsService)
+    private readonly clientsService: ClientsService,
   ) {}
 
+  @Roles('admin', 'manager')
   @Get()
   findAll() {
-    return this.clientsRepository.findAll();
+    return this.clientsService.findAll();
   }
 
+  @Roles('admin', 'manager')
   @Post()
   create(@Body() dto: ClientCreateDto) {
     if (!dto) {
       throw new BadRequestException('Request body is required');
     }
-    return this.clientsRepository.create(dto);
+    return this.clientsService.create(dto);
   }
 }

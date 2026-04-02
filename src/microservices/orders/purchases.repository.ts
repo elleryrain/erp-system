@@ -1,18 +1,18 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
-import { desc, eq, inArray } from "drizzle-orm";
-import { DatabaseService } from "../database/database.service";
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { desc, eq, inArray } from 'drizzle-orm';
+import { DatabaseService } from '../../database/database.service';
 import {
   products,
   purchaseOrderItems,
   purchaseOrders,
   suppliers,
-} from "../database/schema";
+} from '../../database/schema';
 
 @Injectable()
 export class PurchasesRepository {
   constructor(
     @Inject(DatabaseService)
-    private readonly databaseService: DatabaseService
+    private readonly databaseService: DatabaseService,
   ) {}
 
   async findAll() {
@@ -48,7 +48,7 @@ export class PurchasesRepository {
         .values({
           supplierId: data.supplierId,
           orderDate: today,
-          status: "created",
+          status: 'created',
         })
         .returning({
           id: purchaseOrders.id,
@@ -63,9 +63,7 @@ export class PurchasesRepository {
         .from(products)
         .where(inArray(products.id, productIds));
 
-      const priceByProductId = new Map(
-        productRows.map((row) => [row.id, row.price])
-      );
+      const priceByProductId = new Map(productRows.map((row) => [row.id, row.price]));
 
       for (const item of data.items) {
         const price = priceByProductId.get(item.productId);

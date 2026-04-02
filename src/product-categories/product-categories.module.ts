@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ProductCategoriesController } from './product-categories.controller';
-import { ProductCategoriesRepository } from './product-categories.repository';
+import { NatsClientsModule } from '../common/nats/nats-clients.module';
+import { ProductCategoriesService } from './product-categories.service';
 
 @Module({
+  imports: [NatsClientsModule],
   controllers: [ProductCategoriesController],
-  providers: [ProductCategoriesRepository],
+  providers: [ProductCategoriesService],
 })
 export class ProductCategoriesModule {}
